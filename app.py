@@ -18,30 +18,162 @@ def index():
             <html>
             <head>
                 <title>Option Price Fetcher</title>
+                <style>
+                    body {
+                        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                        color: #333;
+                        margin: 0;
+                        padding: 40px;
+                        background-color: #f7f8fa;
+                        text-align: center;
+                    }
+                    .container {
+                        background: white;
+                        padding: 20px;
+                        border-radius: 12px;
+                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                        margin: auto;
+                        width: 60%;
+                        max-width: 600px; /* Increased max width */
+                    }
+                    h1 {
+                        font-size: 24px;
+                        font-weight: 600;
+                        color: #000;
+                    }
+                    form {
+                        margin: auto;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                    }
+                    input[type=text], input[type=number] {
+                        width: 60%; /* Adjusted width for alignment */
+                        padding: 10px;
+                        margin: 8px 0;
+                        border: 1px solid #ddd;
+                        border-radius: 8px;
+                        box-sizing: border-box;
+                        font-size: 18px;
+                        text-align: center; /* Center-align the text within inputs */
+                    }
+                    input[type=submit] {
+                        width: 40%;
+                        padding: 10px;
+                        border: none;
+                        border-radius: 8px;
+                        background-color: #007aff;
+                        color: white;
+                        font-size: 16px;
+                        cursor: pointer;
+                        transition: background-color 0.3s ease;
+                    }
+                    input[type=submit]:hover {
+                        background-color: #005ecb;
+                    }
+                    a {
+                        color: #007aff;
+                        text-decoration: none;
+                        font-size: 16px;
+                    }
+                    a:hover {
+                        text-decoration: underline;
+                    }
+                    pre {
+                        text-align: left;
+                        background-color: #f4f4f4;
+                        padding: 15px;
+                        border-radius: 8px;
+                        border: 1px solid #ddd;
+                        overflow-x: auto;
+                        width: 90%; /* Make pre wider */
+                        margin: auto; /* Center-align pre */
+                        margin-bottom: 20px; /* Added bottom margin for spacing */
+                    }
+                </style>
             </head>
             <body>
-                <h1>Option Price Results</h1>
-                <pre>{{output}}</pre>
-                <a href="/">Try another</a>
+                <div class="container">
+                    <h1>Option Price Results</h1>
+                    <pre>{{output}}</pre>
+                    <a href="/">Try another</a>
+                </div>
             </body>
             </html>
         """, output=output)
     else:
-        # Initial page load, show the form
         return render_template_string("""
             <!DOCTYPE html>
             <html>
             <head>
                 <title>Option Price Fetcher</title>
+                <style>
+                    body {
+                        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                        color: #333;
+                        margin: 0;
+                        padding: 40px;
+                        background-color: #f7f8fa;
+                        text-align: center;
+                    }
+                    .container {
+                        background: white;
+                        padding: 20px;
+                        border-radius: 12px;
+                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                        margin: auto;
+                        width: 60%;
+                        max-width: 600px; /* Increased max width */
+                    }
+                    h1 {
+                        font-size: 24px;
+                        color: #000;
+                        font-weight: 600;
+                    }
+                    form {
+                        margin: auto;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                    }
+                    input[type=text], input[type=number] {
+                        width: 60%; /* Adjusted width for alignment */
+                        padding: 10px;
+                        margin: 8px 0;
+                        border: 1px solid #ddd;
+                        border-radius: 8px;
+                        box-sizing: border-box;
+                        text-align: center; /* Center-align the text within inputs */
+                    }
+                    input[type=submit] {
+                        width: 40%;
+                        padding: 10px;
+                        border: none;
+                        border-radius: 8px;
+                        background-color: #007aff;
+                        color: white;
+                        font-size: 16px;
+                        cursor: pointer;
+                        transition: background-color 0.3s ease;
+                    }
+                    input[type=submit]:hover {
+                        background-color: #005ecb;
+                    }
+                    span {
+                        color: #666;
+                    }
+                </style>
             </head>
             <body>
-                <h1>Enter Option Details</h1>
-                <form method="post">
-                    Company Symbol: <input type="text" name="company" > <span>example: AAPL</span><br>
-                    Date (YYYY-MM-DD): <input type="text" name="date" > <span>format: YYYY-MM_DD<span><br>
-                    Strike Price: <input type="number" name="strike"> <span>example: 100<span><br>
-                    <input type="submit" value="Submit">
-                </form>
+                <div class="container">
+                    <h1>Please Enter Option Details</h1>
+                    <form method="post">
+                        Company Symbol: <input type="text" name="company"><br>
+                        Date (YYYY-MM-DD): <input type="text" name="date"><br>
+                        Strike Price: <input type="number" name="strike"><br>
+                        <input type="submit" value="Submit">
+                    </form>
+                </div>
             </body>
             </html>
         """)
@@ -77,7 +209,7 @@ def get_realtime_option_price(option_name):
     if today.weekday() > 4 or today in holidays.UnitedStates(years=today.year):
         market_status = "weekend" if today.weekday() > 4 else "a holiday"
         last_price = specific_opt["lastPrice"].iloc[0] if not specific_opt.empty else "N/A"
-        output += f"Today is {market_status}, the market is closed. The last recorded transaction price of {option_name} was {last_price}.\n"
+        output += f"Today is {market_status}, the market is closed.\nThe last price of {option_name} was {last_price}.\n"
     else:
         # Define the market hours
         market_open = datetime.strptime("09:30", "%H:%M").time()
@@ -91,10 +223,10 @@ def get_realtime_option_price(option_name):
             last_price = specific_opt["lastPrice"].iloc[0]
             ask_price = specific_opt["ask"].iloc[0]
             bid_price = specific_opt["bid"].iloc[0]
-            output += f"Market is open. Last price: {last_price}, Ask: {ask_price}, Bid: {bid_price}.\n"
+            output += f"Market is open. Last: {last_price}, Ask: {ask_price}, Bid: {bid_price}.\n"
         else:
             last_price = specific_opt["lastPrice"].iloc[0]
-            output +=f"Market is closed. The last recorded transaction price of {option_name} was {last_price}.\n"
+            output +=f"Market is closed. The last price of {option_name} was {last_price}.\n"
     
     return last_price, output
 
