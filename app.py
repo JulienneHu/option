@@ -261,8 +261,53 @@ def calls_or_puts(company, date, strike):
 
     return option_names, output
 
+def get_realtime_stock_price(stock_name):
+    '''
+    This function gets the real-time stock price in the US stock market.
+    It considers the market closed during weekends, US public holidays, and off-hours.
+    '''
+    # Initialize the Ticker object from yfinance
+    stock = yf.Ticker(stock_name)
+    today = datetime.today()
+    output = ''
+    # check if today is a weekend
+    if today.weekday() > 4:
+        todays_data = stock.history(period="1d")
+        current_price = todays_data['Close'][-1]
+        output +=f"Today is {today.strftime('%A')}, the close price of {stock_name} was {current_price:.2f}\n"
+        return output
+    
+    # check if today is a US holiday
+    us_holidays = holidays.UnitedStates(years=today.year)
+    if today in us_holidays:
+        todays_data = stock.history(period="1d")
+        current_price = todays_data['Close'][-1]
+        output +=f"Today is a holiday, the close price of {stock_name} was {current_price:.2f}\n"
+        return output
+    
+    # Define the stock market hours
+    market_open = datetime.strptime("09:30", "%H:%M").time()
+    market_close = datetime.strptime("16:00", "%H:%M").time()
+
+    # Get the current time in Eastern Time
+    eastern = pytz.timezone('US/Eastern')
+    current_time_et = datetime.now(eastern).time()
+
+    # Check if the current time is within the stock market hours
+    if market_open <= current_time_et <= market_close:
+        current_price = stock.info["currentPrice"]
+        output +=f"The current price of {stock_name} is: ${current_price:.4f}\n"
+        return output
+    else:
+        todays_data = stock.history(period="1d")
+        current_price = todays_data['Close'][-1]
+        output += f"The market is closed, the close price of {stock_name} was {current_price:.4f}\n"
+        return output
+    
 def main(company='AAPL', date='2024-03-15', strike=100):
     result = ""
+    result += get_realtime_stock_price(company)
+    result += '\n'
     options, options_output = calls_or_puts(company, date, strike)
     result += options_output  
     result += '\n'
